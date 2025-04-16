@@ -34,17 +34,5 @@ public class HabitCategoryService {
         HabitCategory savedHabitcategory = habitCategoryRepository.save(habitCategory);
 
         result.put("success", savedHabitcategory);
-//        UserInfoResponse userResponse = webClient.get()
-//                .uri("http://localhost:8082/api/user/info/{userId}", userId)
-//                .retrieve()
-//                .bodyToMono(UserInfoResponse.class)
-//                .block();
-
-//        if (userResponse != null) {
-//            habit.setCreatedOn(new Date());
-//
-//            Habit savedHabit = habitCategoryRepository.save(habit);
-//            result.put("success", savedHabit);
-//        } else result.put("error", "User Id Not Vaild");
     }
 }
