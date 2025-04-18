@@ -18,12 +18,12 @@ Microservices are stateless and distributed, making centralized authentication c
 
 ## 🧰 Tech Stack
 
-- Java 17+
+- Java 17
 - Spring Boot
 - Spring Security
 - Spring Cloud Gateway
 - Eureka Server (Service Discovery)
-- Keycloak
+- Keycloak(Oauth2 Authorization)
 - Docker (for Keycloak setup)
 - MySQL / MongoDB
 - Maven
