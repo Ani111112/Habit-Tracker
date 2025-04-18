@@ -30,10 +30,6 @@ Microservices are stateless and distributed, making centralized authentication c
 
 ---
 
-## 📂 Module Structure
-
----
-
 ## 🚀 Getting Started
 
 ### 1. Clone the Repository
