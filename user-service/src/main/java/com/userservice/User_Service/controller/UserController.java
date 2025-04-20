@@ -1,6 +1,8 @@
 package com.userservice.User_Service.controller;
 
+import com.userservice.User_Service.dto.request.UserRequest;
 import com.userservice.User_Service.dto.response.UserInfoResponse;
+import com.userservice.User_Service.dto.response.UserResponse;
 import com.userservice.User_Service.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,21 +20,18 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity signUp(@RequestBody String object) {
-        Map<String, Object> result = new HashMap<>();
+    public UserResponse signUp(@RequestBody UserRequest request) {
         try {
-            userService.signUp(result, object);
-            return result.containsKey("error") ? new ResponseEntity<>(result, HttpStatus.BAD_REQUEST) : new ResponseEntity<>(result, HttpStatus.OK);
+            return userService.signUp(request);
         } catch (Exception e) {
-            result.put("error", e.getMessage());
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+            return null;
         }
     }
 
-    @GetMapping("/info/{userId}")
-    public UserInfoResponse getUserInfo(@PathVariable Long userId) {
+    @GetMapping("/info/{emailId}")
+    public UserInfoResponse getUserInfo(@PathVariable String emailId) {
         try {
-            return userService.getUserInfo(userId);
+            return userService.getUserInfo(emailId);
         } catch (Exception e) {
             return null;
         }

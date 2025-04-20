@@ -20,14 +20,14 @@ public class ApplicationUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userId;
+    private String keyClockId;
     private String name;
     private String emailId;
-    private String password;
     private Date createdOn;
     private Date modifiedOn;
 
     public boolean mandatoryFilledCheck() {
-        return StringUtils.isNotBlank(name) && StringUtils.isNotBlank(emailId) && StringUtils.isNotBlank(password);
+        return StringUtils.isNotBlank(name) && StringUtils.isNotBlank(emailId);
     }
 
     @Override

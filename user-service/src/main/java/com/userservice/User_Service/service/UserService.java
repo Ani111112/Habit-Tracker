@@ -2,11 +2,12 @@ package com.userservice.User_Service.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.password4j.Password;
 import com.userservice.User_Service.Mappers.UserInfoMapper;
+import com.userservice.User_Service.Mappers.UserResponseMapper;
+import com.userservice.User_Service.dto.request.UserRequest;
 import com.userservice.User_Service.dto.response.UserInfoResponse;
+import com.userservice.User_Service.dto.response.UserResponse;
 import com.userservice.User_Service.exception.MandatoryFieldException;
-import com.userservice.User_Service.exception.UserAlreadyPresentException;
 import com.userservice.User_Service.exception.UserNotPresentException;
 import com.userservice.User_Service.model.ApplicationUser;
 import com.userservice.User_Service.repository.UserRepository;
@@ -18,6 +19,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,25 +27,29 @@ import java.util.Map;
 public class UserService {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
-    public void signUp(Map<String, Object> result, String object) throws JsonProcessingException {
-        ApplicationUser applicationUser = objectMapper.readValue(object, ApplicationUser.class);
+    public UserResponse signUp(UserRequest object) throws JsonProcessingException {
+        ApplicationUser applicationUser = UserInfoMapper.INSTANCE.map(object);
         if (!applicationUser.mandatoryFilledCheck()) throw new MandatoryFieldException("Fill all the mandatory field");
 
-        userRepository.findByEmailId(applicationUser.getEmailId()).ifPresent(user -> {
-            log.error("{} Already Present in Database", applicationUser.getEmailId());
-            throw new UserAlreadyPresentException("Email id already registered....Try to login");
-        });
-
-        applicationUser.setPassword((Password.hash(applicationUser.getPassword()).addRandomSalt().withArgon2()).getResult());
         applicationUser.setCreatedOn(new Date());
-        ApplicationUser savedApplicationUser = userRepository.save(applicationUser);
-        result.put("success", savedApplicationUser);
+        Optional<ApplicationUser> optionalSavedUser = userRepository.findByEmailId(applicationUser.getEmailId());
+
+        if (optionalSavedUser.isPresent()) {
+            ApplicationUser savedUser = optionalSavedUser.get();
+            if (StringUtils.isNotBlank(savedUser.getKeyClockId())) return UserResponseMapper.INSTANCE.map(savedUser);
+            savedUser.setModifiedOn(new Date());
+            savedUser.setKeyClockId(applicationUser.getKeyClockId());
+            return UserResponseMapper.INSTANCE.map(userRepository.save(savedUser));
+        } else {
+            ApplicationUser savedUser = userRepository.save(applicationUser);
+            return UserResponseMapper.INSTANCE.map(userRepository.save(savedUser));
+        }
     }
 
-    public UserInfoResponse getUserInfo(Long userId) {
-        if (ObjectUtils.isEmpty(userId)) throw new MandatoryFieldException("User id should not be empty");
+    public UserInfoResponse getUserInfo(String emailId) {
+        if (ObjectUtils.isEmpty(emailId)) throw new MandatoryFieldException("User id should not be empty");
 
-        ApplicationUser applicationUser = userRepository.findById(userId).orElseThrow(() -> new UserNotPresentException("User Not Exits"));
+        ApplicationUser applicationUser = userRepository.findByEmailId(emailId).orElseThrow(() -> new UserNotPresentException("User Not Exits"));
         return UserInfoMapper.INSTANCE.map(applicationUser);
     }
 
