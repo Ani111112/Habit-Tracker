@@ -2,7 +2,6 @@ package com.habitservice.habit_service.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.habitservice.habit_service.dto.response.UserInfoResponse;
 import com.habitservice.habit_service.exception.MandatoryFieldException;
 import com.habitservice.habit_service.model.Habit;
 import com.habitservice.habit_service.model.HabitCategory;
@@ -10,7 +9,6 @@ import com.habitservice.habit_service.repository.HabitCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Date;
 import java.util.Map;

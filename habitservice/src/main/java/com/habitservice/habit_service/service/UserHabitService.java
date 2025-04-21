@@ -29,14 +29,14 @@ public class UserHabitService {
     private final HabitRepository habitRepository;
     public void addUserHabit(String object, Map<String, Object> result) throws JsonProcessingException {
         List<UserHabit> userHabit = objectMapper.readValue(object, new TypeReference<>() {});
-        long userId = userHabit.get(0).getUserId();
+        String userId = userHabit.get(0).getUserEmailId();
         List<Long> habitId = userHabit.stream().map(UserHabit::getHabitId).toList();
 
         boolean isAllHabitIdValid = habitRepository.countByIdIn(habitId) == habitId.size();
         if (!isAllHabitIdValid) throw new IllegalArgumentException("Invalid Habit Id....");
 
         UserInfoResponse userResponse = webClientBuilder.build().get()
-                .uri("http://User-Service/api/user/info/{userId}", userId)
+                .uri("http://User-Service/api/user/info/{emailId}", userId)
                 .retrieve()
                 .bodyToMono(UserInfoResponse.class)
                 .block();

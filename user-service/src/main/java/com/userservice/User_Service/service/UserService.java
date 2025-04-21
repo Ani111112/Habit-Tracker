@@ -14,6 +14,7 @@ import com.userservice.User_Service.repository.UserRepository;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -54,16 +55,15 @@ public class UserService {
     }
 
 
-    public void updateUser(Map<String, Object> result, String object) throws JsonProcessingException {
-        ApplicationUser applicationUser = objectMapper.readValue(object, ApplicationUser.class);
+    public UserResponse updateUser(UserRequest object) {
+        ApplicationUser applicationUser = UserInfoMapper.INSTANCE.map(object);
 
-        ApplicationUser alreadySavedApplication = userRepository.findById(applicationUser.getUserId()).orElseThrow(() -> new UserNotPresentException("Email id not exits"));
-
+        ApplicationUser alreadySavedApplication = userRepository.findByEmailId(applicationUser.getEmailId()).orElseThrow(() -> new UserNotPresentException("Email id not exits"));
         if (!alreadySavedApplication.equals(applicationUser)) {
             applicationUser.setCreatedOn(alreadySavedApplication.getCreatedOn());
             applicationUser.setModifiedOn(new Date());
-            ApplicationUser updatedUser = userRepository.save(applicationUser);
-            result.put("success", updatedUser);
-        } else result.put("success", "User Profile Update Successfully");
+            return UserResponseMapper.INSTANCE.map(userRepository.save(applicationUser));
+        }
+        return null;
     }
 }

@@ -19,7 +19,7 @@ public class UserHabit {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String userHabitId;
-    private long userId;
+    private String userEmailId;
     private long habitId;
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate startDate;
