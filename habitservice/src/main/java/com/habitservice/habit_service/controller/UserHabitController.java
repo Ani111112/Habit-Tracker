@@ -1,6 +1,7 @@
 package com.habitservice.habit_service.controller;
 
 import com.habitservice.habit_service.service.UserHabitService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ public class UserHabitController {
     private final UserHabitService userHabitService;
 
     @PostMapping("/add")
+    @CircuitBreaker(name = "inventory", fallbackMethod = "fallBackMethod")
     public ResponseEntity addUserHabit(@RequestBody String object) {
         Map<String, Object> result = new HashMap<>();
         try {
@@ -28,5 +30,9 @@ public class UserHabitController {
             result.put("error", e.getMessage());
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public ResponseEntity fallBackMethod(String object, Map<String, Object> result, RuntimeException exception) {
+        return new ResponseEntity<>("Oops! Something Went Wrong", HttpStatus.BAD_REQUEST);
     }
 }
