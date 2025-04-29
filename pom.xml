@@ -21,6 +21,7 @@
         <module>user-service</module>
         <module>service-discovery</module>
         <module>api-gateway</module>
+        <module>key-clock-spi-service</module>
     </modules>
 
     <properties>

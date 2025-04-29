@@ -8,6 +8,7 @@ import com.habitservice.habit_service.exception.UserIdNotPresentException;
 import com.habitservice.habit_service.model.UserHabit;
 import com.habitservice.habit_service.repository.HabitRepository;
 import com.habitservice.habit_service.repository.UserHabitRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,8 @@ public class UserHabitService {
     private final ObjectMapper objectMapper;
     private final WebClient.Builder webClientBuilder;
     private final HabitRepository habitRepository;
+
+
     public void addUserHabit(String object, Map<String, Object> result) throws JsonProcessingException {
         List<UserHabit> userHabit = objectMapper.readValue(object, new TypeReference<>() {});
         String userId = userHabit.get(0).getUserEmailId();

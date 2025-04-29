@@ -1,25 +1,32 @@
+version: '3.8'
+
 services:
-  my-keycloak:
-    image: quay.io/keycloak/keycloak:26.2.0
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2.1
+    container_name: keycloak
+    restart: always
+    command: start-dev
     environment:
-      KC_HOSTNAME: localhost
-      KC_HOSTNAME_PORT: 8080
-      KC_HOSTNAME_STRICT_BACKCHANNEL: "true"
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: mysql
+      KC_DB_URL: jdbc:mysql://mysql-e6196a5-aniruddhamukherjee232-bf03.a.aivencloud.com:22667/keyclock?verifyServerCertificate=false&useSSL=true&requireSSL=true
+      KC_DB_USERNAME: avnadmin
+      KC_DB_PASSWORD: AVNS_F2PWGC2rm-SVNNr8RiC
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_METRICS_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
-      KC_LOG_LEVEL: info
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7080/health/ready"]
-      interval: 15s
-      timeout: 2s
-      retries: 15
-    command: ["start-dev", "--http-port", "8080", "--https-port", "7443"]
+      KC_LOG_LEVEL: INFO
+      KC_EVENTS_LISTENERS: jboss-logging,EXTERNAL_DB_SYNC
+      KC_EVENTS_ENABLED: "true"
+      KEYCLOAK_EXTRA_ARGS: -Dkeycloak.spi.eventListener.providers=EXTERNAL_DB_SYNC
+
     ports:
       - "8181:8080"
-      - "7443:7443"
-    networks:
-      - local_network
-networks:
-  local_network:
-    driver: bridge
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - keycloak_logs:/opt/keycloak/logs
+      - ./key-clock-spi-service/target/key-clock-spi-service.jar:/opt/keycloak/providers/key-clock-spi-service.jar
+
+volumes:
+  keycloak_data:
+  keycloak_logs:
