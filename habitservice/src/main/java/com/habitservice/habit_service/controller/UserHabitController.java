@@ -20,7 +20,7 @@ public class UserHabitController {
     private final UserHabitService userHabitService;
 
     @PostMapping("/add")
-    @CircuitBreaker(name = "inventory", fallbackMethod = "fallBackMethod")
+    @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
     public ResponseEntity addUserHabit(@RequestBody String object) {
         Map<String, Object> result = new HashMap<>();
         try {
@@ -32,7 +32,7 @@ public class UserHabitController {
         }
     }
 
-    public ResponseEntity fallBackMethod(String object, Map<String, Object> result, RuntimeException exception) {
+    public ResponseEntity fallbackMethod(String object, Map<String, Object> result, RuntimeException exception) {
         return new ResponseEntity<>("Oops! Something Went Wrong", HttpStatus.BAD_REQUEST);
     }
 }

@@ -4,6 +4,7 @@
     <file url="file://$PROJECT_DIR$/api-gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/habitservice/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/habitservice/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/key-clock-spi-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/scheduler-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/service-discovery/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />

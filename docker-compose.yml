@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2.1
+    container_name: keycloak
+    restart: always
+    command: start-dev
+    environment:
+      KC_DB: mysql
+      KC_DB_URL: jdbc:mysql://mysql-e6196a5-aniruddhamukherjee232-bf03.a.aivencloud.com:22667/keyclock?verifyServerCertificate=false&useSSL=true&requireSSL=true
+      KC_DB_USERNAME: avnadmin
+      KC_DB_PASSWORD: AVNS_F2PWGC2rm-SVNNr8RiC
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_METRICS_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+      KC_LOG_LEVEL: INFO
+      KC_EVENTS_LISTENERS: jboss-logging,EXTERNAL_DB_SYNC
+      KC_EVENTS_ENABLED: "true"
+      KEYCLOAK_EXTRA_ARGS: -Dkeycloak.spi.eventListener.providers=EXTERNAL_DB_SYNC
+
+    ports:
+      - "8181:8080"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - keycloak_logs:/opt/keycloak/logs
+      - ./key-clock-spi-service/target/key-clock-spi-service.jar:/opt/keycloak/providers/key-clock-spi-service.jar
+
+volumes:
+  keycloak_data:
+  keycloak_logs:
