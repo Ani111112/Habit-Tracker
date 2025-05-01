@@ -1,5 +1,6 @@
 package com.habitservice.habit_service.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.habitservice.habit_service.service.UserHabitService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
@@ -21,18 +22,13 @@ public class UserHabitController {
 
     @PostMapping("/add")
     @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
-    public ResponseEntity addUserHabit(@RequestBody String object) {
+    public ResponseEntity addUserHabit(@RequestBody String object) throws JsonProcessingException {
         Map<String, Object> result = new HashMap<>();
-        try {
-            userHabitService.addUserHabit(object, result);
-            return result.containsKey("success") ? new ResponseEntity<>(result, HttpStatus.OK) : new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            result.put("error", e.getMessage());
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-        }
+        userHabitService.addUserHabit(object, result);
+        return result.containsKey("success") ? new ResponseEntity<>(result, HttpStatus.OK) : new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
     }
 
-    public ResponseEntity fallbackMethod(String object, Map<String, Object> result, RuntimeException exception) {
-        return new ResponseEntity<>("Oops! Something Went Wrong", HttpStatus.BAD_REQUEST);
+    public ResponseEntity fallbackMethod(String object, Throwable throwable) {
+        return new ResponseEntity<>("Oops! Something Went Wrong in services", HttpStatus.SERVICE_UNAVAILABLE);
     }
 }

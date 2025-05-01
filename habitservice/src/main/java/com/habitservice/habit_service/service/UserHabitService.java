@@ -11,6 +11,8 @@ import com.habitservice.habit_service.repository.UserHabitRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -30,6 +32,7 @@ public class UserHabitService {
     private final HabitRepository habitRepository;
 
 
+    @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
     public void addUserHabit(String object, Map<String, Object> result) throws JsonProcessingException {
         List<UserHabit> userHabit = objectMapper.readValue(object, new TypeReference<>() {});
         String userId = userHabit.get(0).getUserEmailId();
@@ -50,5 +53,9 @@ public class UserHabitService {
             List<UserHabit> savedUserHabit = userHabitRepository.saveAll(userHabit);
             result.put("success", savedUserHabit);
         } else result.put("error", String.format("Unable to add Habit in %s id", userId));
+    }
+
+    public void fallbackMethod(String object, Map<String, Object> result, Throwable throwable) {
+        throw new RuntimeException("Opps Something went wrong");
     }
 }
