@@ -27,6 +27,19 @@ services:
       - keycloak_logs:/opt/keycloak/logs
       - ./key-clock-spi-service/target/key-clock-spi-service.jar:/opt/keycloak/providers/key-clock-spi-service.jar
 
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    environment:
+      STORAGE_TYPE: mysql
+      MYSQL_HOST: mysql-e6196a5-aniruddhamukherjee232-bf03.a.aivencloud.com
+      MYSQL_USER: avnadmin
+      MYSQL_PASS: AVNS_F2PWGC2rm-SVNNr8RiC
+      MYSQL_DB: zipkin
+      MYSQL_TCP_PORT: 22667
+
 volumes:
   keycloak_data:
   keycloak_logs:
