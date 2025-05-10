@@ -24,7 +24,8 @@ Microservices are stateless and distributed, making centralized authentication c
 - Spring Cloud Gateway
 - Eureka Server (Service Discovery)
 - Keycloak(Oauth2 Authorization)
-- Docker (for Keycloak setup)
+- Zipkin with Micrometer
+- Docker (for Keycloak & Zipkin setup)
 - MySQL / MongoDB
 - Maven
 
