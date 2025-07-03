@@ -41,6 +41,7 @@ public class UserHabitService {
         boolean isAllHabitIdValid = habitRepository.countByIdIn(habitId) == habitId.size();
         if (!isAllHabitIdValid) throw new IllegalArgumentException("Invalid Habit Id....");
 
+//        boolean duplicateHabit = userHabitRepository.fallbackMetho
         UserInfoResponse userResponse = webClientBuilder.build().get()
                 .uri("http://User-Service/api/user/info/{emailId}", userId)
                 .retrieve()
@@ -57,5 +58,9 @@ public class UserHabitService {
 
     public void fallbackMethod(String object, Map<String, Object> result, Throwable throwable) {
         throw new RuntimeException("Opps Something went wrong");
+    }
+
+    public void updateUserHabit(String object, Map<String, Object> result) {
+
     }
 }

@@ -62,7 +62,16 @@
     </dependencyManagement>
 
     <build>
-        <pluginManagement>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.yml</include>
+                </includes>
+            </resource>
+        </resources>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -81,11 +90,37 @@
                                 <version>1.6.3</version>
                             </path>
                         </annotationProcessorPaths>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
+                        <source>17</source>
+                        <target>17</target>
+                        <release>17</release>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>com.google.cloud.tools</groupId>
+                    <artifactId>jib-maven-plugin</artifactId>
+                    <version>3.2.1</version>
+                    <configuration>
+                        <from>
+                            <image>eclipse-temurin:17.0.4.1_1-jre</image>
+                        </from>
+                        <to>
+                            <image>registry.hub.docker.com/aniruddhadev/${project.artifactId}</image>
+                        </to>
+                        <container>
+                            <jvmFlags>
+                                <jvmFlag>-Dspring.profiles.active=docker</jvmFlag>
+                            </jvmFlags>
+                        </container>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
-        </pluginManagement>
     </build>
 </project>
