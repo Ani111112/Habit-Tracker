@@ -1,10 +1,13 @@
 version: '3.8'
 
 services:
+#  KeyCloak Docker Compose Config
   keycloak:
-    image: quay.io/keycloak/keycloak:26.2.1
+    image: aniruddhadev/key-clock-spi-service:latest  # <-- built with Jib including SPI JAR
+    pull_policy: always #This will fetch the latest image every time without cache issue in docker
+    platform: linux/amd64
     container_name: keycloak
-    restart: always
+    restart: unless-stopped
     command: start-dev
     environment:
       KC_DB: mysql
@@ -25,21 +28,54 @@ services:
     volumes:
       - keycloak_data:/opt/keycloak/data
       - keycloak_logs:/opt/keycloak/logs
-      - ./key-clock-spi-service/target/key-clock-spi-service.jar:/opt/keycloak/providers/key-clock-spi-service.jar
+#      - ./key-clock-spi-service/target/key-clock-spi-service.jar:/opt/keycloak/providers/key-clock-spi-service.jar
+
+    networks:
+      - backend
 
   zipkin:
     image: openzipkin/zipkin
     container_name: zipkin
     ports:
       - "9411:9411"
+    networks:
+      - backend
+
+  # Eureka Server (Optional)
+  discovery-service:
+    image: aniruddhadev/service-discovery:latest
+    pull_policy: always #This will fetch the latest image every time without cache issue in docker
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
     environment:
-      STORAGE_TYPE: mysql
-      MYSQL_HOST: mysql-e6196a5-aniruddhamukherjee232-bf03.a.aivencloud.com
-      MYSQL_USER: avnadmin
-      MYSQL_PASS: AVNS_F2PWGC2rm-SVNNr8RiC
-      MYSQL_DB: zipkin
-      MYSQL_TCP_PORT: 22667
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - backend
+    depends_on:
+      - zipkin
+      - keycloak
+
+  api-gateway:
+    image: aniruddhadev/api-gateway:latest
+    pull_policy: always #This will fetch the latest image every time without cache issue in docker
+    container_name: api-gateway
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - backend
+    depends_on:
+      - zipkin
+      - discovery-service
+      - keycloak
+    restart: unless-stopped
 
 volumes:
   keycloak_data:
   keycloak_logs:
+
+networks:
+  backend:
+    driver: bridge
