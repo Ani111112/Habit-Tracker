@@ -12,9 +12,6 @@ import java.util.Arrays;
 @EnableDiscoveryClient
 public class ApiGatewayApplication {
     public static void main(String[] args) {
-//        SpringApplication.run(ApiGatewayApplication.class, args);
-        ConfigurableApplicationContext context = SpringApplication.run(ApiGatewayApplication.class, args);
-        Environment env = context.getEnvironment();
-        System.out.println("🟢 Active Profiles: " + Arrays.toString(env.getActiveProfiles()));
+        SpringApplication.run(ApiGatewayApplication.class, args);
     }
 }
