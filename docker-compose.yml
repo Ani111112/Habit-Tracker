@@ -29,6 +29,9 @@ services:
       - keycloak_data:/opt/keycloak/data
       - keycloak_logs:/opt/keycloak/logs
 #      - ./key-clock-spi-service/target/key-clock-spi-service.jar:/opt/keycloak/providers/key-clock-spi-service.jar
+    profiles:
+      - dev
+      - prod
 
     networks:
       - backend
@@ -40,6 +43,9 @@ services:
       - "9411:9411"
     networks:
       - backend
+    profiles:
+      - dev
+      - prod
 
   # Eureka Server (Optional)
   discovery-service:
@@ -55,6 +61,8 @@ services:
     depends_on:
       - zipkin
       - keycloak
+    profiles:
+      - prod
 
   api-gateway:
     image: aniruddhadev/api-gateway:latest
@@ -71,6 +79,8 @@ services:
       - discovery-service
       - keycloak
     restart: unless-stopped
+    profiles:
+      - prod
 
   user-service:
     image: aniruddhadev/user-service:latest
@@ -84,7 +94,29 @@ services:
       - backend
     depends_on:
       - api-gateway
+      - keycloak
+      - discovery-service
     restart: unless-stopped
+    profiles:
+      - prod
+
+  habit-service :
+    image: aniruddhadev/habitservice:latest
+    pull_policy: always
+    container_name: habit-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - backend
+    depends_on:
+      - api-gateway
+      - keycloak
+      - discovery-service
+    restart: unless-stopped
+    profiles:
+      - prod
 
 volumes:
   keycloak_data:
