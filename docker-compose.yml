@@ -21,8 +21,8 @@ services:
       KC_LOG_LEVEL: INFO
       KC_EVENTS_LISTENERS: jboss-logging,EXTERNAL_DB_SYNC
       KC_EVENTS_ENABLED: "true"
-      KEYCLOAK_EXTRA_ARGS: -Dkeycloak.spi.eventListener.providers=EXTERNAL_DB_SYNC
-
+      KC_SPI_EVENTS_LISTENER_EXTERNAL_DB_SYNC_ENABLED: "true"
+#      KEYCLOAK_EXTRA_ARGS: -Dkeycloak.spi.eventListener.providers=EXTERNAL_DB_SYNC
     ports:
       - "8181:8080"
     volumes:
@@ -70,6 +70,20 @@ services:
       - zipkin
       - discovery-service
       - keycloak
+    restart: unless-stopped
+
+  user-service:
+    image: aniruddhadev/user-service:latest
+    pull_policy: always
+    container_name: user-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - backend
+    depends_on:
+      - api-gateway
     restart: unless-stopped
 
 volumes:

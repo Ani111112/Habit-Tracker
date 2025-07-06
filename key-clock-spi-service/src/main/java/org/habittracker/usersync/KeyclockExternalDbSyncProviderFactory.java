@@ -1,4 +1,4 @@
-package org.habittracker.UserSync;
+package org.habittracker.usersync;
 
 import lombok.NoArgsConstructor;
 import org.keycloak.Config;
@@ -14,7 +14,7 @@ public class KeyclockExternalDbSyncProviderFactory implements EventListenerProvi
     @Override
     public EventListenerProvider create(KeycloakSession keycloakSession) {
         System.out.println("Creating EventListenerProvider...");
-        return new KeyClockUserSyncProvider();
+        return new KeyClockUserSyncProvider(keycloakSession);
     }
 
     @Override
