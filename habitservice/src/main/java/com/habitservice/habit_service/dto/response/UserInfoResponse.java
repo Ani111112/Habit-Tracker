@@ -14,8 +14,10 @@ public class UserInfoResponse {
     private String userId;
     private String name;
     private String emailId;
+    private String keyClockId;
 
     public boolean isHaveNullFilled() {
-        return StringUtils.isEmpty(this.userId) && StringUtils.isEmpty(this.name) && StringUtils.isEmpty(this.emailId);
+        return StringUtils.isEmpty(this.userId) && StringUtils.isEmpty(this.name) && StringUtils.isEmpty(this.emailId)
+        && StringUtils.isNotBlank(keyClockId);
     }
 }

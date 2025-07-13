@@ -18,7 +18,7 @@ import java.util.Objects;
 @Table(name = "user")
 public class ApplicationUser {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
     private String keyClockId;
     private String name;

@@ -3,53 +3,46 @@ package com.habitservice.habit_service.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.habitservice.habit_service.Enum.HabitFrequency;
-import io.micrometer.common.util.StringUtils;
-import jakarta.persistence.*;
+import com.habitservice.habit_service.Enum.HabitType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.slf4j.LoggerFactory;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity
-public class Habit {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String habitName;
-    private String habitDescription;
-    private Date createdOn;
-    private Date modifiedOn;
-
-    @ManyToOne
-    @JoinColumn(name = "habit_cat_id", referencedColumnName = "id", updatable = true, insertable = true)
-    @JsonBackReference
-    private HabitCategory habitCategory;
+@Document(collection = "habit")
+public class Habit extends BaseEntity{
+    private String userId; // Keycloak sub
+    private String habitTempId; // habit template id
+    private String description;
+    private HabitType type;
+    private Goal goal;
+    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
+    private LocalDate startDate;
+    private String activeHabit = "Y";
+    private boolean reminderEnabled;
+    private boolean archived = false; //default is not archived
+    private Instant createdAt;
+    private Instant updatedAt;
 
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         Habit habit = (Habit) object;
-        return Objects.equals(habitName, habit.habitName) && Objects.equals(habitDescription, habit.habitDescription);
+        return reminderEnabled == habit.reminderEnabled && archived == habit.archived && Objects.equals(description, habit.description) && type == habit.type && Objects.equals(goal, habit.goal) && Objects.equals(startDate, habit.startDate) && Objects.equals(activeHabit, habit.activeHabit);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(habitName, habitDescription);
-    }
-
-    public boolean haveMandatoryFilled() {
-        return StringUtils.isNotBlank(this.habitName) && StringUtils.isNotBlank(this.habitDescription);
+        return Objects.hash(description, type, goal, startDate, activeHabit, reminderEnabled, archived);
     }
 }

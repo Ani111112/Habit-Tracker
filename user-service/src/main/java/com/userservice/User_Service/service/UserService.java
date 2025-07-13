@@ -29,6 +29,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     public UserResponse signUp(UserRequest object) throws JsonProcessingException {
+        log.info("Application Sign up starts...");
         ApplicationUser applicationUser = UserInfoMapper.INSTANCE.map(object);
         if (!applicationUser.mandatoryFilledCheck()) throw new MandatoryFieldException("Fill all the mandatory field");
 
@@ -36,14 +37,17 @@ public class UserService {
         Optional<ApplicationUser> optionalSavedUser = userRepository.findByEmailId(applicationUser.getEmailId());
 
         if (optionalSavedUser.isPresent()) {
+            log.info("{} email id already exits", applicationUser.getEmailId());
             ApplicationUser savedUser = optionalSavedUser.get();
             if (StringUtils.isNotBlank(savedUser.getKeyClockId())) return UserResponseMapper.INSTANCE.map(savedUser);
             savedUser.setModifiedOn(new Date());
             savedUser.setKeyClockId(applicationUser.getKeyClockId());
             return UserResponseMapper.INSTANCE.map(userRepository.save(savedUser));
         } else {
+            log.info("{} Email id is not exits in user table", applicationUser.getEmailId());
             ApplicationUser savedUser = userRepository.save(applicationUser);
-            return UserResponseMapper.INSTANCE.map(userRepository.save(savedUser));
+            log.info("ApplicationUser Saved Successfully with id : {}", savedUser.getUserId());
+            return UserResponseMapper.INSTANCE.map(savedUser);
         }
     }
 
@@ -52,18 +56,5 @@ public class UserService {
 
         ApplicationUser applicationUser = userRepository.findByEmailId(emailId).orElseThrow(() -> new UserNotPresentException("User Not Exits"));
         return UserInfoMapper.INSTANCE.map(applicationUser);
-    }
-
-
-    public UserResponse updateUser(UserRequest object) {
-        ApplicationUser applicationUser = UserInfoMapper.INSTANCE.map(object);
-
-        ApplicationUser alreadySavedApplication = userRepository.findByEmailId(applicationUser.getEmailId()).orElseThrow(() -> new UserNotPresentException("Email id not exits"));
-        if (!alreadySavedApplication.equals(applicationUser)) {
-            applicationUser.setCreatedOn(alreadySavedApplication.getCreatedOn());
-            applicationUser.setModifiedOn(new Date());
-            return UserResponseMapper.INSTANCE.map(userRepository.save(applicationUser));
-        }
-        return null;
     }
 }
