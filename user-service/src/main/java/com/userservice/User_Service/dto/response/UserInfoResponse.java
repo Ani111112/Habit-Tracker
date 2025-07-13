@@ -10,4 +10,5 @@ public class UserInfoResponse {
     private Long userId;
     private String name;
     private String emailId;
+    private String keyClockId;
 }

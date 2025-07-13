@@ -31,13 +31,4 @@ public class UserController {
             return null;
         }
     }
-
-    @PutMapping("/update")
-    public UserResponse updateUser(@RequestBody UserRequest request) {
-        try {
-            return userService.updateUser(request);
-        } catch (Exception e) {
-            return null;
-        }
-    }
 }

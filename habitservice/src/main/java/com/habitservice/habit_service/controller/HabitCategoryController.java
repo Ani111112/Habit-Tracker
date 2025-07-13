@@ -11,15 +11,32 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/habit/v1.0/")
+@RequestMapping("/api/habit-cat/v1.0/")
 @RequiredArgsConstructor
 public class HabitCategoryController {
     private final HabitCategoryService habitCategoryService;
 
     @PostMapping("/add")
-    public ResponseEntity addHabit(@RequestBody String object) throws JsonProcessingException {
+    public ResponseEntity addHabitCategory(@RequestBody String object) {
         Map<String, Object> result = new HashMap<>();
-        habitCategoryService.addHabit(object, result);
-        return result.containsKey("error") ? new ResponseEntity<>(result, HttpStatus.BAD_REQUEST) : new ResponseEntity<>(result, HttpStatus.OK);
+        try {
+            habitCategoryService.addHabitCategory(object, result);
+            return result.containsKey("error") ? new ResponseEntity<>(result, HttpStatus.BAD_REQUEST) : new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception ex) {
+            result.put("error", ex.getMessage());
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity updateHabitCategory(@RequestBody String object) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            habitCategoryService.updateHabitCategory(object, result);
+            return result.containsKey("error") ? new ResponseEntity<>(result, HttpStatus.BAD_REQUEST) : new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception ex) {
+            result.put("error", ex.getMessage());
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
     }
 }
