@@ -22,7 +22,7 @@ Currently implemented modules: `User Service`, `Habit Service`, `Keycloak Integr
 | Security           | Keycloak (OIDC)             |
 | Build Tool         | Maven + Jib (Docker image)  |
 | Containerization   | Docker                      |
-| Database           | MySQL (MongoDB upcoming)    |
+| Database           | MySQL & MongoDB             |
 
 ---
 
