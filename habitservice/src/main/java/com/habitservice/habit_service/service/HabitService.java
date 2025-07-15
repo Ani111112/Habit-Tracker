@@ -3,6 +3,8 @@ package com.habitservice.habit_service.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.habitservice.habit_service.common.CommonUtil;
+import com.habitservice.habit_service.common.KafkaProducer;
+import com.habitservice.habit_service.dto.request.KafkaDTO;
 import com.habitservice.habit_service.dto.response.UserInfoResponse;
 import com.habitservice.habit_service.exception.HabitAlreadyPresentException;
 import com.habitservice.habit_service.exception.InvalidInputException;
@@ -25,6 +27,7 @@ public class HabitService {
     private final CollectionHandler collectionHandler;
     private final CommonUtil commonUtil;
     private final WebClient.Builder webClientBuilder;
+    private final KafkaProducer kafkaProducer;
 
     public void addHabit(String auth, String object, Map<String, Object> result) throws JsonProcessingException {
         Habit habit = objectMapper.readValue(object, Habit.class);
@@ -43,15 +46,26 @@ public class HabitService {
         List<Habit> habits = collectionHandler.findDocumentsWithMultipleFieldQueries(fields, messageId, Habit.class);
         if (!habits.isEmpty()) throw new HabitAlreadyPresentException("This Habit Already Added");
 
+        HabitTemplate habitTemplate = collectionHandler.findDocumentByField("_id", habit.getHabitTempId(), HabitTemplate.class).get(0);
         if (habit.getGoal() == null) {
-            HabitTemplate habitTemplate = collectionHandler.findDocumentByField("_id", habit.getHabitTempId(), HabitTemplate.class).get(0);
             habit.setGoal(habitTemplate.getDefaultGoal());
         }
 
         habit.setUserId(userInfoResponse.getKeyClockId());
         habit.setCreatedAt(Instant.now());
         Habit savedHabit = (Habit) collectionHandler.save(habit);
-        if(savedHabit != null) result.put("success", savedHabit);
+        if(savedHabit != null) {
+//            Map<String, String> props = Map.of("username", userInfoResponse.getName(), "habitName", habitTemplate.getHabitName(),
+//                    "habitType", "ADD-HABIT", "email", userInfoResponse.getEmailId());
+            kafkaProducer.sendMessage("habit-topic", KafkaDTO.builder()
+                            .templateName("habit-added.html")
+                            .to(userInfoResponse.getEmailId())
+                            .subject("Your New Habit Is Now Being Tracked!")
+                            .habitName(habitTemplate.getHabitName())
+                            .userName(userInfoResponse.getName())
+                    .build());
+            result.put("success", savedHabit);
+        }
         else result.put("error", "Unable to add the habit");
     }
 
